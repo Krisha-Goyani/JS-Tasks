@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Slider</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="main-box">
+        <div class="box">
+            <h1 style="text-align: center; padding-block: 20px; margin: 0;">Image Slider</h1>
+            <div class="slider-container">
+                <div class="image" style="background-image: url('./download.jfif');"></div>
+                <div class="image" style="background-image: url('./download\ \(1\).jfif');"></div>
+                <div class="image" style="background-image: url('./download\ \(2\).jfif');"></div>
+                <div class="image" style="background-image: url('./download\ \(3\).jfif');"></div>
+                <div class="image" style="background-image: url('./download\ \(4\).jfif');"></div>
+            </div>
+            <div class="ip" style="justify-self: center;">
+                <input type="number" id="speed" placeholder="2" min="1">
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        let images = document.querySelectorAll('.image');
+        let interval = 2000;
+        let index = 0;
+        let autoSlide;
+
+        function animateImages() {
+            images.forEach(img => img.classList.remove('expanded'));
+            images[index].classList.add('expanded');
+
+            images.forEach(img => img.style.transition = `width ${interval / 1000}s ease-in-out`);
+
+            index = (index + 1) % images.length;
+            autoSlide = setTimeout(animateImages, interval);
+        }
+
+        document.getElementById('speed').addEventListener('change', function () {
+            let newInterval = parseInt(this.value) * 1000;
+            if (!isNaN(newInterval) && newInterval > 0) {
+                interval = newInterval;
+            }
+        });
+
+        images.forEach( img => {
+            img.addEventListener('click', function () {
+                clearTimeout(autoSlide); // Stop transition
+
+                let newInterval = parseInt(document.getElementById('speed').value) * 1000;
+                if (!isNaN(newInterval) && newInterval > 0) {
+                    interval = newInterval;
+                }
+                images.forEach(img => img.classList.remove('expanded'));
+                this.classList.add('expanded');
+                this.style.transition = `width ${interval / 1000}s ease-in-out`;
+
+                index = Array.from(images).indexOf(this); // Restart animation
+                autoSlide = setTimeout(animateImages, interval);
+            });
+        });
+
+        animateImages();
+    </script>
+</body>
+
+</html>
