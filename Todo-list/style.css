@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #333;
+    color: #000;
+    text-align: center;
+}
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    margin: auto;
+    margin-top: 150px;
+    box-shadow: 0px 0px 100px rgba(196, 191, 191, 0.5);
+}
+.serach{
+    height: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 250px;
+}
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #000;
+    padding: 10px;
+}
+.edit, .delete, .update {
+    width: 70px;
+    padding: 9px 0;
+    /* margin-inline: 20px; */
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.ip{
+    border-radius: 5px;
+    width: 250px;
+    height: 30px;
+    border: 1px solid black;
+}
+.edit { background-color: rgb(178, 230, 178); }
+.delete { background-color: rgb(238, 101, 101); color: white; }
+
+.update { background-color: rgb(0, 162, 255); color: white; display: none; margin-left: 15px}
+
+.edit:hover, .delete:hover, .update:hover, .submit:hover {
+    transform: scale(1.05);
+}
+
+.submit { 
+    margin-inline: 20px;
+    background-color: rgb(128, 182, 243); 
+    color: white; 
+    width: 90px;
+    /* height: 25px; */
+    padding: 9px 0;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.progress-container {
+    margin-top: 0;
+    width: 250px; 
+    justify-self: center;
+}
+.progress-bar {
+    width: 0%;
+    height: 10px;
+    background-color: black;
+    /* border: 1px solid black; */
+}
+.btns{
+    width: 200px;
+    display: flex;
+    justify-content: space-around;
+    justify-self: center;
+}

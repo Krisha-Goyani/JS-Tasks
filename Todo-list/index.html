@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Task-2 To-Do List</h2>
+
+        <input type="text" class="serach" id="search" placeholder="Search tasks...">
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 250px;">Task</th>
+                    <th style="width: 250px;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="task-list">
+                <tr>
+                    <td contenteditable="false" style="text-align: start;">
+                        Create budget of this month 
+                        <button class="update">Update</button>
+                    </td>
+                        <td  >
+                            <div class="btns">
+                                <button class="edit"><b>Edit</b></button> 
+                                <button class="delete"><b>Delete</b></button>
+                            </div>
+                        </td>
+                </tr>
+                <tr>
+                    <td contenteditable="false" style="text-align: start;">Pay electricity bill <button class="update">Update</button></td>
+                    <td>
+                        <div class="btns">
+                            <button class="edit"><b>Edit</b></button> 
+                            <button class="delete"><b>Delete</b></button>
+                        </div>
+                </tr>
+            </tbody>
+        </table>
+        <div style="display: flex; justify-content: center; margin-block: 20px;">
+            <input class="ip" type="text" id="new-task" placeholder="Enter a new task">
+            <button class="submit" id="submit">Submit</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <p id="progress-text" style="text-align: start;">0%</p>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+
+</html>
