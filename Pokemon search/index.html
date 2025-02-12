@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Gallery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pokemon Gallery</h1>
+            <div class="toggle-container">
+                <label class="switch">
+                    <input type="checkbox" id="infiniteScrollToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>Infinite Scroll</span>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search Pokemon">
+        </div>
+
+        <div class="pokemon-grid" id="pokemonGrid">
+            <!-- Pokemon cards will be inserted here -->
+        </div>
+
+        <div class="shimmer-container" id="shimmerContainer">
+            <!-- Shimmer elements will be inserted here -->
+        </div>
+
+        <div class="pagination" id="pagination">
+            <button id="prevBtn" class="btn">Previous</button>
+            <button id="nextBtn" class="btn">Next</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
