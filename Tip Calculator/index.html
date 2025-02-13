@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tip Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 class="title">Tip Calculator</h1>
+    <div class="container">
+        <div class="left-panel">
+            <label>Bill</label>
+            <input type="number" class="billAmount" id="billAmount" placeholder="₹ 1000">
+
+            <label>Select Tip</label>
+            <div class="tip-buttons">
+                <button class="tip-btn" onclick="setTip(5)">5%</button>
+                <button class="tip-btn" onclick="setTip(10)">10%</button>
+                <button class="tip-btn" onclick="setTip(15)">15%</button>
+                <button class="tip-btn" onclick="setTip(25)">25%</button>
+                <button class="tip-btn" onclick="setTip(50)">50%</button>
+                <button class="tip-btn" onclick="setTip(75)">75%</button>
+            </div>
+
+            <label>Tip %</label>
+            <input type="number" class="customTip" id="customTip" placeholder="0" onchange="updateCalculations()">
+
+            <label>No Of People</label>
+            <input type="number" class="numPeople" id="numPeople" placeholder="4" value="1" min="1" onchange="updateCalculations()">
+        </div>
+
+        <div class="right-panel">
+            <div class="result-row">
+                <span>Tip amount</span>
+                <span id="tipAmount">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>Total</span>
+                <span id="totalAmount">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>Each Person Bill</span>
+                <span id="perPersonAmount">₹0.00</span>
+            </div>
+
+            <button class="action-btn" onclick="printReceipt()">Print</button>
+
+            <button class="action-btn" onclick="resetCalculator()">Reset</button>
+        </div>
+    </div>
+
+    <div id="receipt">
+        <div class="receipt-title"> Receipt</div>
+        <div class="receipt-item">
+            <span>Bill Amount : </span>
+            <span id="receiptBillAmount"> &nbsp;₹0.00</span>
+        </div>
+        <div class="receipt-item">
+            <span>Tip Percentage :</span>
+            <span id="receiptTipPercentage">&nbsp; 0%</span>
+        </div>
+        <div class="receipt-item">
+            <span>Number of People :</span>
+            <span id="receiptNumPeople">&nbsp; 1</span>
+        </div>
+        <div class="receipt-item">
+            <span>Tip Amount :</span>
+            <span id="receiptTipAmount">&nbsp; ₹0.00</span>
+        </div>
+        <div class="receipt-item receipt-total">
+            <span>Total Bill :</span>
+            <span id="receiptTotalAmount">&nbsp; ₹0.00</span>
+        </div>
+        <div class="receipt-item receipt-total">
+            <span>Each Person Bill :</span>
+            <span id="receiptPerPersonAmount">&nbsp; ₹0.00</span>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,4 +1,5 @@
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 10;
+const PRELOAD_THRESHOLD = 3;
 const API_BASE_URL = "https://pokeapi.co/api/v2/pokemon";
 
 // DOM Elements
@@ -16,31 +17,47 @@ let isLoading = false;
 let hasMore = true;
 let infiniteScrollEnabled = false;
 let pokemonCache = new Map();
+let preloadedData = [];
+let isInitialLoad = true;
+let loadedPokemon = new Set(); // Track already loaded Pokemon
+let isFetching = false; // Additional flag to prevent parallel fetches
 
 const observer = new IntersectionObserver(
   (entries) => {
-    if (entries[0].isIntersecting && infiniteScrollEnabled && !isLoading && hasMore) {
+    if (
+      entries[0].isIntersecting &&
+      infiniteScrollEnabled &&
+      !isLoading &&
+      (hasMore || preloadedData.length > 0)
+    ) {
       currentPage++;
-      fetchPokemon();
+      fetchPokemon(true);
     }
   },
-  { threshold: 0.5 }
+  {
+    threshold: 0.1,
+    rootMargin: "300px",
+  }
 );
 
 function createShimmerCards(count) {
   shimmerContainer.innerHTML = Array(count)
-    .fill(`
+    .fill(
+      `
       <div class="shimmer-card">
         <div class="shimmer-image"></div>
         <div class="shimmer-title"></div>
       </div>
-    `).join('');
+    `
+    )
+    .join("");
 }
 
 function createPokemonCard(pokemon) {
   const card = document.createElement("div");
   card.className = "pokemon-card";
-  const imageUrl = pokemon.sprites?.front_default || "placeholder-image-url.png";
+  const imageUrl =
+    pokemon.sprites?.front_default || "placeholder-image-url.png";
   card.innerHTML = `
     <img src="${imageUrl}" alt="${pokemon.name}" onerror="this.src='placeholder-image-url.png'">
     <h5>${pokemon.name}</h5>
@@ -48,61 +65,87 @@ function createPokemonCard(pokemon) {
   return card;
 }
 
-async function fetchPokemon() {
+async function preloadNextPages() {
+  if (!infiniteScrollEnabled || !isLoading || !hasMore) return;
+  
+  try {
+    // Only fetch one next page instead of multiple
+    const nextPage = currentPage + 1;
+    const offset = nextPage * ITEMS_PER_PAGE;
+    
+    // Check if we're within the API limit and don't already have this data
+    if (offset < 1000 && preloadedData.length < ITEMS_PER_PAGE * 2) {
+      const response = await fetch(`${API_BASE_URL}?limit=${ITEMS_PER_PAGE}&offset=${offset}`);
+      const data = await response.json();
+      preloadedData = [...preloadedData, ...data.results];
+    }
+  } catch (error) {
+    console.error("Error preloading Pokemon:", error);
+  }
+}
+
+async function fetchPokemon(isInfiniteScroll = false) {
   if (isLoading) return;
   isLoading = true;
-  showShimmerLoading(true);
-  
-  // Add a minimum delay to prevent flickering
-  const minDelay = new Promise(resolve => setTimeout(resolve, 300));
+  showShimmerLoading(!isInfiniteScroll);
 
   try {
+    let listData;
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-    const [listData, pokemonDetails] = await Promise.all([
-      fetch(`${API_BASE_URL}?limit=${ITEMS_PER_PAGE}&offset=${offset}`).then(response => response.json()),
-      minDelay // Ensure minimum shimmer display time
-    ]);
-    console.log(listData);
+
+    if (isInfiniteScroll && preloadedData.length >= ITEMS_PER_PAGE) {
+      listData = {
+        results: preloadedData.slice(0, ITEMS_PER_PAGE),
+        next: preloadedData.length > ITEMS_PER_PAGE || offset + ITEMS_PER_PAGE < 1000
+      };
+      preloadedData = preloadedData.slice(ITEMS_PER_PAGE);
+    } else {
+      pokemonGrid.style.display = 'none';
+      listData = await fetch(`${API_BASE_URL}?limit=${ITEMS_PER_PAGE}&offset=${offset}`)
+        .then(response => response.json());
+    }
 
     hasMore = !!listData.next;
 
-    const pokemonPromises = listData.results.map(async (pokemon) => {
-      if (pokemonCache.has(pokemon.url)) return pokemonCache.get(pokemon.url);
-      try {
-        const data = await fetch(pokemon.url).then(r => r.json());
-        pokemonCache.set(pokemon.url, data);
-        return data;
-      } catch (error) {
-        console.error(`Error fetching ${pokemon.name}:`, error);
-        return null;
+    if (!isInfiniteScroll) {
+      pokemonGrid.innerHTML = "";
+    }
+
+    // Track this page as loaded
+    loadedPokemon.add(offset);
+
+    const fragment = document.createDocumentFragment();
+    listData.results.forEach((pokemon, index) => {
+      const pokemonId = pokemon.url.split("/").slice(-2, -1)[0];
+      const card = document.createElement("div");
+      card.className = "pokemon-card";
+      const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
+
+      card.innerHTML = `
+        <img src="${imageUrl}" alt="${pokemon.name}" loading="lazy" onerror="this.src='placeholder-image-url.png'">
+        <h5>${pokemon.name}</h5>
+      `;
+
+      fragment.appendChild(card);
+      if (index === listData.results.length - 1 && infiniteScrollEnabled) {
+        observer.disconnect();
+        observer.observe(card);
       }
     });
 
-    // Fetch pokemon in batches to improve performance
-    const batchSize = 5;
-    const validPokemon = [];
-    
-    for (let i = 0; i < pokemonPromises.length; i += batchSize) {
-      const batch = await Promise.all(pokemonPromises.slice(i, i + batchSize));
-      batch.forEach(pokemon => {
-        if (pokemon) validPokemon.push(pokemon);
-      });
-    }
-
-    if (!infiniteScrollEnabled) pokemonGrid.innerHTML = "";
-
-    validPokemon.forEach((pokemon, index) => {
-      const card = createPokemonCard(pokemon);
-      pokemonGrid.appendChild(card);
-      if (index === validPokemon.length - 1) observer.observe(card);
-    });
-
+    pokemonGrid.appendChild(fragment);
     updatePaginationButtons();
+
+    // Only preload if we're running low on preloaded data
+    if (infiniteScrollEnabled && preloadedData.length < ITEMS_PER_PAGE) {
+      preloadNextPages();
+    }
   } catch (error) {
     console.error("Error fetching Pokemon:", error);
-    pokemonGrid.innerHTML = '<div class="error">Error loading Pokemon. Please try again later.</div>';
+    if (!isInfiniteScroll) {
+      pokemonGrid.innerHTML = '<div class="error">Error loading Pokemon. Please try again later.</div>';
+    }
   } finally {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
     isLoading = false;
     showShimmerLoading(false);
     pokemonGrid.style.display = 'grid';
@@ -113,9 +156,9 @@ function showShimmerLoading(show) {
   shimmerContainer.style.display = show ? "grid" : "none";
   if (show) {
     createShimmerCards(ITEMS_PER_PAGE);
-    shimmerContainer.style.opacity = '1';
+    shimmerContainer.style.opacity = "1";
   } else {
-    shimmerContainer.style.opacity = '0';
+    shimmerContainer.style.opacity = "0";
   }
 }
 
@@ -145,7 +188,11 @@ infiniteScrollToggle.addEventListener("change", (e) => {
   infiniteScrollEnabled = e.target.checked;
   pagination.style.display = infiniteScrollEnabled ? "none" : "flex";
   pokemonGrid.innerHTML = "";
+  preloadedData = [];
   currentPage = 1;
+  isInitialLoad = true;
+  observer.disconnect();
+  showShimmerLoading(true);
   fetchPokemon();
 });
 
@@ -157,51 +204,48 @@ searchInput.addEventListener("input", (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
     if (searchTerm.length > 0) {
       showShimmerLoading(true);
-      pokemonGrid.style.display = 'none';
-      
-      // Add minimum delay for shimmer
-      const minDelay = new Promise(resolve => setTimeout(resolve, 300));
+      pokemonGrid.style.display = "none";
+
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 300));
 
       try {
         const [response, _] = await Promise.all([
           fetch(`${API_BASE_URL}?limit=1000`),
-          minDelay
+          minDelay,
         ]);
         const data = await response.json();
-        
-        const filteredPokemon = data.results.filter(pokemon => 
-          pokemon.name.toLowerCase().includes(searchTerm)
-        );
+
+        const filteredPokemon = data.results
+          .filter((pokemon) => pokemon.name.toLowerCase().includes(searchTerm))
+          .slice(0, ITEMS_PER_PAGE);
 
         if (filteredPokemon.length > 0) {
           pokemonGrid.innerHTML = "";
-          // Process in batches
-          const batchSize = 5;
-          for (let i = 0; i < Math.min(filteredPokemon.length, ITEMS_PER_PAGE); i += batchSize) {
-            const batch = filteredPokemon.slice(i, i + batchSize);
-            const pokemonDetails = await Promise.all(
-              batch.map(async (pokemon) => {
-                if (pokemonCache.has(pokemon.url)) return pokemonCache.get(pokemon.url);
-                const response = await fetch(pokemon.url);
-                const pokemonData = await response.json();
-                pokemonCache.set(pokemon.url, pokemonData);
-                return pokemonData;
-              })
-            );
-            pokemonDetails.forEach(pokemon => {
-              pokemonGrid.appendChild(createPokemonCard(pokemon));
-            });
-          }
+          filteredPokemon.forEach((pokemon) => {
+            const pokemonId = pokemon.url.split("/").slice(-2, -1)[0];
+            const card = document.createElement("div");
+            card.className = "pokemon-card";
+            const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
+
+            card.innerHTML = `
+              <img src="${imageUrl}" alt="${pokemon.name}" onerror="this.src='placeholder-image-url.png'">
+              <h5>${pokemon.name}</h5>
+            `;
+
+            pokemonGrid.appendChild(card);
+          });
         } else {
-          pokemonGrid.innerHTML = '<div class="error">No Pokemon found matching your search</div>';
+          pokemonGrid.innerHTML =
+            '<div class="error">No Pokemon found matching your search</div>';
         }
       } catch (error) {
         console.error("Error searching Pokemon:", error);
-        pokemonGrid.innerHTML = '<div class="error">Error searching Pokemon</div>';
+        pokemonGrid.innerHTML =
+          '<div class="error">Error searching Pokemon</div>';
       } finally {
-        await new Promise(resolve => setTimeout(resolve, 200)); // Smooth transition out
+        await new Promise((resolve) => setTimeout(resolve, 200));
         showShimmerLoading(false);
-        pokemonGrid.style.display = 'grid';
+        pokemonGrid.style.display = "grid";
       }
     } else {
       currentPage = 1;
