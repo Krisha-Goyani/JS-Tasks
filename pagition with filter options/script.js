@@ -1,95 +1,64 @@
 let pokemonData = [];
 let currentPage = 1;
 let itemsPerPage = 5;
-let currentMaxPages = 120;
+let totalPages = 120;
 
-// Fetch Pokemon data from API with pagination and search
-async function fetchPokemonData(searchTerm = '', limit = itemsPerPage, offset = 0) {
+// DOM Elements
+const elements = {
+    pokemonGallery: document.getElementById('pokemonGallery'),
+    pagination: document.getElementById('pagination'),
+    search: document.getElementById('search'),
+    sortOrder: document.getElementById('sortOrder'),
+    perPage: document.getElementById('perPage'),
+    totalPages: document.getElementById('totalPages')
+};
+
+// Fetch Pokemon data from API
+async function fetchPokemonData() {
     try {
-        const url = `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`;
-        const response = await fetch(url);
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
         const data = await response.json();
         
-        if (searchTerm) {
-            // Filter the current data instead of making a new API call
-            const filteredResults = data.results.filter(pokemon => 
-                pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            
-            if (filteredResults.length === 0) {
-                pokemonData = [];
-                renderGallery();
-                return;
-            }
-            
-            // Apply pagination to filtered results
-            const paginatedResults = filteredResults.slice(offset, offset + limit);
-            
-            pokemonData = paginatedResults.map((pokemon, index) => {
-                const pokemonId = pokemon.url.split('/').slice(-2, -1)[0];
-                return {
-                    name: pokemon.name,
-                    height: Math.floor(Math.random() * 20) + 1,
-                    weight: Math.floor(Math.random() * 200) + 1,
-                    order: Math.floor(Math.random() * 1000) + 1,
-                    image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`
-                };
-            });
-            
-            // Store total filtered count for pagination
-            pokemonData.totalCount = filteredResults.length;
-        } else {
-            // For non-search case, use the regular pagination
-            const paginatedResults = data.results.slice(offset, offset + limit);
-            
-            pokemonData = paginatedResults.map((pokemon, index) => {
-                const pokemonId = pokemon.url.split('/').slice(-2, -1)[0];
-                return {
-                    name: pokemon.name,
-                    height: Math.floor(Math.random() * 20) + 1,
-                    weight: Math.floor(Math.random() * 200) + 1,
-                    order: Math.floor(Math.random() * 1000) + 1,
-                    image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`
-                };
-            });
-            
-            pokemonData.totalCount = 1000;
-        }
+        // Fetch detailed data for each Pokemon
+        const detailedData = await Promise.all(
+            data.results.map(async (pokemon) => {
+                const detailResponse = await fetch(pokemon.url);
+                return detailResponse.json();
+            })
+        );
 
-        updateURLParams();
+        pokemonData = detailedData.map(pokemon => ({
+            name: pokemon.name,
+            height: pokemon.height,
+            weight: pokemon.weight,
+            order: pokemon.order,
+            image: pokemon.sprites.front_default
+        }));
+
         renderGallery();
     } catch (error) {
-        console.error('Error fetching Pokémon data:', error);
-        pokemonData = [];
-        renderGallery();
+        console.error('Error fetching Pokemon data:', error);
     }
 }
-
 
 // Update URL parameters
 function updateURLParams() {
     const params = new URLSearchParams(window.location.search);
     params.set('page', currentPage);
     params.set('perPage', itemsPerPage);
-    params.set('sort', document.getElementById('sortOrder').value);
-    params.set('search', document.getElementById('search').value);
-    params.set('maxPages', currentMaxPages);
+    params.set('sort', elements.sortOrder.value);
+    params.set('search', elements.search.value);
+    params.set('totalPages', totalPages);
     
     window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
 }
 
-// Calculate total pages
-function calculateTotalPages(totalItems) {
-    const maxPossiblePages = Math.ceil(1000 / itemsPerPage);
-    return Math.min(maxPossiblePages, currentMaxPages);
-}
-
 // Sort Pokemon data
 function sortPokemonData(data) {
-    const sortOrder = document.getElementById('sortOrder').value;
+    const sortOrder = elements.sortOrder.value;
     const sortedData = [...data];
-
-    const sortConfigs = {
+    
+    const sortingStrategies = {
         'height-high': (a, b) => b.height - a.height,
         'height-low': (a, b) => a.height - b.height,
         'weight-high': (a, b) => b.weight - a.weight,
@@ -98,246 +67,170 @@ function sortPokemonData(data) {
         'order-low': (a, b) => a.order - b.order
     };
 
-    return sortConfigs[sortOrder] 
-        ? sortedData.sort(sortConfigs[sortOrder])
+    return sortingStrategies[sortOrder] 
+        ? sortedData.sort(sortingStrategies[sortOrder])
         : sortedData;
+}
+
+// Filter Pokemon data
+function filterPokemonData(data) {
+    const searchTerm = elements.search.value.toLowerCase();
+    return data.filter(pokemon => 
+        pokemon.name.toLowerCase().includes(searchTerm)
+    );
+}
+
+// Generate page numbers
+function generatePageNumbers(currentPage, maxPages) {
+    const pageNumbers = [];
+    
+    // Always add first page
+    pageNumbers.push(1);
+    
+    // Calculate range around current page
+    let start = Math.max(2, currentPage - 2);
+    let end = Math.min(maxPages - 1, currentPage + 2);
+    
+    // Add ellipsis after 1 if needed
+    if (start > 2) {
+        pageNumbers.push('...');
+    }
+    
+    // Add pages around current page
+    for (let i = start; i <= end; i++) {
+        pageNumbers.push(i);
+    }
+    
+    // Add ellipsis before last page if needed
+    if (end < maxPages - 1) {
+        pageNumbers.push('...');
+    }
+    
+    // Add last page if it's not already included
+    if (maxPages > 1) {
+        pageNumbers.push(maxPages);
+    }
+    
+    return pageNumbers;
 }
 
 // Render Pokemon gallery
 function renderGallery() {
-    const gallery = document.getElementById('pokemonGallery');
-    const sortedData = sortPokemonData(pokemonData);
+    const gallery = elements.pokemonGallery;
     
-    if (sortedData.length === 0) {
-        gallery.innerHTML = '<div class="no-results">No Pokémon found</div>';
-        document.getElementById('pagination').innerHTML = '';
-        return;
-    }
-
-    gallery.innerHTML = sortedData.map(pokemon => `
+    gallery.innerHTML = pokemonData.map(pokemon => `
         <div class="card">
             <img src="${pokemon.image}" alt="${pokemon.name}">
             <div class="pokemon-info">
-                <h3>${pokemon.name}</h3>
-                <p><b>Height:</b> ${pokemon.height}</p>
-                <p><b>Weight:</b> ${pokemon.weight}kg</p>
-                <p><b>Order:</b> ${pokemon.order}</p>
+                <p>Name: ${pokemon.name}</p>
+                <p>Height: ${pokemon.height}</p>
+                <p>Weight: ${pokemon.weight}kg</p>
+                <p>Order: ${pokemon.order}</p>
             </div>
         </div>
     `).join('');
-
-    renderPagination(1000); // Total number of Pokemon
 }
 
 // Render pagination
-function renderPagination(totalItems) {
-    const pagination = document.getElementById('pagination');
-    const totalPages = calculateTotalPages(pokemonData.totalCount || totalItems);
+function renderPagination(maxPages) {
+    const pagination = elements.pagination;
+    const pageNumbers = generatePageNumbers(currentPage, maxPages);
     
-    if (totalPages <= 1) {
-        pagination.innerHTML = '';
-        return;
-    }
-
-    let paginationHTML = '';
-
-    // Previous button
-    paginationHTML += `
+    let paginationHTML = `
         <button onclick="changePage('prev')" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
     `;
-
-    // First page
-    paginationHTML += `
-        <button onclick="changePage(1)" ${currentPage === 1 ? 'class="active"' : ''}>1</button>
-    `;
-
-    // Calculate range of pages to show
-    let startPage = Math.max(2, currentPage - 2);
-    let endPage = Math.min(totalPages - 1, currentPage + 2);
-
-    // Add ellipsis after first page if needed
-    if (startPage > 2) {
-        paginationHTML += '<button disabled>...</button>';
-    }
-
-    // Add page numbers
-    for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `
-            <button onclick="changePage(${i})" 
-                    ${currentPage === i ? 'class="active"' : ''}>${i}</button>
-        `;
-    }
-
-    // Add ellipsis before last page if needed
-    if (endPage < totalPages - 1) {
-        paginationHTML += '<button disabled>...</button>';
-    }
-
-    // Last page
-    if (totalPages > 1) {
-        paginationHTML += `
-            <button onclick="changePage(${totalPages})" 
-                    ${currentPage === totalPages ? 'class="active"' : ''}>${totalPages}</button>
-        `;
-    }
-
-    // Next button
+    
+    pageNumbers.forEach(pageNum => {
+        if (pageNum === '...') {
+            paginationHTML += `<button disabled>...</button>`;
+        } else {
+            paginationHTML += `
+                <button onclick="changePage(${pageNum})" 
+                        ${currentPage === pageNum ? 'class="active"' : ''}>${pageNum}</button>
+            `;
+        }
+    });
+    
     paginationHTML += `
         <button onclick="changePage('next')" 
-                ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+                ${currentPage === maxPages ? 'disabled' : ''}>Next</button>
     `;
-
+    
     pagination.innerHTML = paginationHTML;
 }
 
-// Update changePage function to handle search
-async function changePage(page) {
-    const searchTerm = document.getElementById('search').value;
-    const totalPages = calculateTotalPages(pokemonData.totalCount || 1000);
-    
-    if (page === 'prev') {
-        currentPage = Math.max(1, currentPage - 1);
-    } else if (page === 'next') {
-        currentPage = Math.min(totalPages, currentPage + 1);
-    } else {
-        currentPage = Math.min(Math.max(1, page), totalPages);
-    }
-    
-    const offset = (currentPage - 1) * itemsPerPage;
-    await fetchPokemonData(searchTerm, itemsPerPage, offset);
-}
-
 // Change page
-async function changePage(page) {
-    const totalPages = calculateTotalPages(1000);
-    
+function changePage(page) {
     if (page === 'prev') {
         currentPage = Math.max(1, currentPage - 1);
     } else if (page === 'next') {
         currentPage = Math.min(totalPages, currentPage + 1);
     } else {
-        currentPage = Math.min(Math.max(1, page), totalPages);
+        currentPage = page;
     }
     
-    const offset = (currentPage - 1) * itemsPerPage;
-    await fetchPokemonData('', itemsPerPage, offset);
-}
-
-// Debounce function
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+    updateURLParams();
+    renderGallery();
 }
 
 // Event listeners
-document.getElementById('search').addEventListener('input', 
-    debounce(async (e) => {
-        currentPage = 1; // Reset to first page on new search
-        const searchTerm = e.target.value;
-        const offset = (currentPage - 1) * itemsPerPage;
-        await fetchPokemonData(searchTerm, itemsPerPage, offset);
-    }, 300)
-);
-
-document.getElementById('sortOrder').addEventListener('change', () => {
+elements.search.addEventListener('input', () => {
+    currentPage = 1;
     updateURLParams();
     renderGallery();
 });
 
-document.getElementById('perPage').addEventListener('change', async (e) => {
+elements.sortOrder.addEventListener('change', () => {
+    updateURLParams();
+    renderGallery();
+});
+
+elements.perPage.addEventListener('change', (e) => {
     if (e.target.value) {
         itemsPerPage = parseInt(e.target.value);
         currentPage = 1;
-        const maxPossiblePages = Math.ceil(1000 / itemsPerPage);
-        
-        if (currentMaxPages > maxPossiblePages) {
-            currentMaxPages = maxPossiblePages;
-        }
-        
-        updateTotalPagesDropdown();
-        const offset = (currentPage - 1) * itemsPerPage;
-        await fetchPokemonData('', itemsPerPage, offset);
-    }
-});
-
-document.getElementById('totalPages').addEventListener('change', (e) => {
-    if (e.target.value) {
-        const newMaxPages = parseInt(e.target.value);
-        const maxPossiblePages = Math.ceil(1000 / itemsPerPage);
-        
-        currentMaxPages = Math.min(newMaxPages, maxPossiblePages);
-        currentPage = 1;
-        
         updateURLParams();
         renderGallery();
     }
 });
 
-// Load initial params from URL and initialize
-window.onload = async () => {
-    loadURLParams();
-    await fetchPokemonData('', itemsPerPage, (currentPage - 1) * itemsPerPage);
-};
+elements.totalPages.addEventListener('change', (e) => {
+    if (e.target.value) {
+        totalPages = parseInt(e.target.value);
+        currentPage = Math.min(currentPage, totalPages);
+        updateURLParams();
+        renderGallery();
+    }
+});
 
-// Load URL parameters
+// Load initial params from URL
 function loadURLParams() {
     const params = new URLSearchParams(window.location.search);
     
     currentPage = parseInt(params.get('page')) || 1;
     itemsPerPage = parseInt(params.get('perPage')) || 5;
-    currentMaxPages = parseInt(params.get('maxPages')) || 120;
+    totalPages = parseInt(params.get('totalPages')) || 120;
     
     const sortOrder = params.get('sort');
     if (sortOrder) {
-        document.getElementById('sortOrder').value = sortOrder;
+        elements.sortOrder.value = sortOrder;
     }
     
     const search = params.get('search');
     if (search) {
-        document.getElementById('search').value = search;
+        elements.search.value = search;
     }
 
     if (itemsPerPage) {
-        document.getElementById('perPage').value = itemsPerPage;
+        elements.perPage.value = itemsPerPage;
     }
     
-    if (currentMaxPages) {
-        document.getElementById('totalPages').value = currentMaxPages;
+    if (totalPages) {
+        elements.totalPages.value = totalPages;
     }
 }
 
-function updateTotalPagesDropdown() {
-    const totalPagesSelect = document.getElementById('totalPages');
-    const maxPossiblePages = Math.ceil(1000 / itemsPerPage);
-    const currentValue = parseInt(totalPagesSelect.value) || maxPossiblePages;
-    
-    while (totalPagesSelect.options.length > 1) {
-        totalPagesSelect.remove(1);
-    }
-    
-    const allOptions = [5, 10, 15, 25, 50, 100, 120];
-    
-    allOptions.forEach(num => {
-        if (num <= maxPossiblePages) {
-            const option = document.createElement('option');
-            option.value = num;
-            option.textContent = num;
-            totalPagesSelect.appendChild(option);
-        }
-    });
-    
-    if (currentValue > maxPossiblePages) {
-        currentMaxPages = maxPossiblePages;
-        totalPagesSelect.value = maxPossiblePages;
-    } else {
-        currentMaxPages = currentValue;
-        totalPagesSelect.value = currentValue;
-    }
-}
+// Initialize
+window.onload = () => {
+    fetchPokemonData();
+};
