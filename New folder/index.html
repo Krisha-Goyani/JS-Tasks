@@ -1,4 +1,3 @@
-<!-- <link rel="stylesheet" href="style.css"> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,6 +32,11 @@
             width: 100%;
         }
 
+        .header h1 {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
         .controls {
             display: flex;
             gap: 10px;
@@ -48,14 +52,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             background-color: white;
-        }
-
-        .controls input {
             min-width: 200px;
-        }
-
-        .controls select {
-            min-width: 150px;
         }
 
         .gallery {
@@ -93,7 +90,6 @@
             margin-top: 20px;
             flex-wrap: wrap;
             max-width: 800px;
-            margin: 20px auto;
         }
 
         .pagination button {
@@ -129,50 +125,42 @@
         </div>
 
         <div class="controls">
-            <div>
-                <input type="text" id="search" placeholder="search here">
-            </div>
-            <div>
-                <select id="sortOrder">
-                    <option value="">Select</option>
-                    <option value="height-low">Height: low to high</option>
-                    <option value="height-high">Height: high to low</option>
-                    <option value="weight-low">Weight: low to high</option>
-                    <option value="weight-high">Weight: high to low</option>
-                    <option value="order-low">Order: low to high</option>
-                    <option value="order-high">Order: high to low</option>
-                </select>
-            </div>
-            <div>
-                <select id="perPage">
-                    <option value="">select no of card per page</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="120">120</option>
-                </select>
-            </div>
-            <div>
-                <select id="totalPages">
-                    <option value="">select no of page</option>
-                    <option value="120">120</option>
-                    <option value="100">100</option>
-                    <option value="50">50</option>
-                    <option value="25">25</option>
-                    <option value="15">15</option>
-                    <option value="10">10</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
+            <input type="text" id="search" placeholder="search here">
+            <select id="sortOrder">
+                <option value="">Select</option>
+                <option value="height-low">Height: low to high</option>
+                <option value="height-high">Height: high to low</option>
+                <option value="weight-low">Weight: low to high</option>
+                <option value="weight-high">Weight: high to low</option>
+                <option value="order-low">Order: low to high</option>
+                <option value="order-high">Order: high to low</option>
+            </select>
+            <select id="perPage">
+                <option value="">select no of card per page</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="120">120</option>
+            </select>
+            <select id="totalPages">
+                <option value="">select no of page</option>
+                <option value="120">120</option>
+                <option value="100">100</option>
+                <option value="50">50</option>
+                <option value="25">25</option>
+                <option value="15">15</option>
+                <option value="10">10</option>
+                <option value="5">5</option>
+            </select>
         </div>
 
         <div class="gallery" id="pokemonGallery"></div>
         <div class="pagination" id="pagination"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="scr.js"></script>
 </body>
 </html>
