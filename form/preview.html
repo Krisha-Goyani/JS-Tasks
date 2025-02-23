@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GLEAM Form Preview</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+    <div class="preview-delete-container">
+        <div class="preview-section">
+            <h2 class="section-header">Preview Section</h2>
+            <div id="previewArea"></div>
+            <div id="editForm" style="display: none;">
+                <form id="userEditForm">
+                    <input type="text" name="firstName" placeholder="First Name">
+                    <input type="text" name="lastName" placeholder="Last Name">
+                    <input type="email" name="email" placeholder="Email">
+                    <input type="tel" name="phone" placeholder="Phone">
+                    <select name="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select name="education">
+                        <option value="12th">12th</option>
+                        <option value="Bachelor">Bachelor</option>
+                        <option value="Master">Master</option>
+                    </select>
+                    <button type="submit">Save</button>
+                    <button type="button" onclick="cancelEdit()">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="delete-section">
+            <h2 class="section-header">Delete Section</h2>
+            <div id="deleteArea">
+                <div class="empty-state">
+                    <svg viewBox="0 0 100 100">
+                        <rect x="25" y="25" width="50" height="50" fill="none" stroke="#ccc" stroke-width="2"/>
+                        <line x1="35" y1="35" x2="65" y2="65" stroke="#ccc" stroke-width="2"/>
+                        <line x1="65" y1="35" x2="35" y2="65" stroke="#ccc" stroke-width="2"/>
+                    </svg>
+                    <p>Drag items here to delete</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="preview.js"></script>
+</body>
+</html> 

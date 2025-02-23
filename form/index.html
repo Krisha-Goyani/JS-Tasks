@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Initial Form -->
+    <div class="container" id="formContainer">        
+        <form id="userForm">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName">
+                <div class="error-text"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName">
+                <div class="error-text"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email">
+                <div class="error-text"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone">
+                <div class="error-text"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Gender:</label>
+                <div class="gender-group">
+                    <div class="gender-option">
+                        <input type="radio" id="male" name="gender" value="Male">
+                        <label for="male">Male</label>
+                    </div>
+                    <div class="gender-option">
+                        <input type="radio" id="female" name="gender" value="Female">
+                        <label for="female">Female</label>
+                    </div>
+                    <div class="gender-option">
+                        <input type="radio" id="other" name="gender" value="Other">
+                        <label for="other">Other</label>
+                    </div>
+                </div>
+                <div class="error-text"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="education">Educational Degree:</label>
+                <select id="education" name="education">
+                    <option value="">Select Degree</option>
+                    <option value="12th">12th</option>
+                    <option value="Bachelor">Bachelor</option>
+                    <option value="Master">Master</option>
+                </select>
+                <div class="error-text"></div>
+            </div>
+
+            <div class="form-group image-group">
+                <label for="profileImage">Profile Image:</label>
+                <div class="image-input-container">
+                    <input type="file" id="profileImage" name="profileImage" accept="image/*">
+                    <div id="imagePreview"></div>
+                </div>
+                <div class="error-text"></div>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview and Delete Page -->
+    <div class="preview-delete-container" id="previewDeleteContainer">
+        <div class="preview-section">
+            <h2 class="section-header">Preview Section</h2>
+            <div id="previewArea"></div>
+        </div>
+
+        <div class="delete-section">
+            <h2 class="section-header">Delete Section</h2>
+            <div class="delete-header">
+                <div class="delete-options">
+                    <button class="btn btn-secondary" id="selectAllBtn">Select All</button>
+                    <button class="btn btn-primary" id="deleteSelectedBtn">Delete</button>
+                </div>
+            </div>
+            <div id="deleteArea"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

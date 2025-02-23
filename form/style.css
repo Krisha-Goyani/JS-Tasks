@@ -1,0 +1,259 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-delete-container {
+    display: none;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input:not([type="radio"]), 
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.preview-section, .delete-section {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    cursor: move;
+    transition: opacity 0.3s;
+}
+
+.preview-card.dragging {
+    opacity: 0.5;
+}
+
+.delete-section.drag-over {
+    background-color: #f8f9fa;
+    border: 2px dashed #007bff;
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+    margin-top: 0;
+}
+
+.btn-primary {
+    background: #0096FF;
+    color: white;
+}
+
+.btn-secondary {
+    background: #4169E1;
+    color: white;
+}
+
+.gender-group {
+    display: flex;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.delete-section {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.delete-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.delete-options {
+    display: flex;
+    gap: 10px;
+}
+
+.delete-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.delete-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.section-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.empty-state img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.empty-state svg {
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    font-size: 16px;
+}
+
+/* Phone input specific styles */
+.iti {
+    width: 100%;
+}
+
+.iti__flag {
+    background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/img/flags.png");
+}
+
+@media (-webkit-min-device-pixel-ratio: 2) {
+    .iti__flag {
+        background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/img/flags@2x.png");
+    }
+}
+
+.image-group .image-input-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.image-group input[type="file"] {
+    flex: 1;
+}
+
+#imagePreview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+#imagePreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Remove :valid/:invalid pseudo-classes and only use .valid/.invalid classes */
+.form-group input:not([type="radio"]).valid,
+.form-group select.valid {
+    border: 2px solid #28a745;
+}
+
+.form-group input:not([type="radio"]).invalid,
+.form-group select.invalid {
+    border: 2px solid #dc3545;
+}
+
+/* Style for phone input validation */
+.iti__flag-container + input.valid {
+    border: 2px solid #28a745;
+}
+
+.iti__flag-container + input.invalid {
+    border: 2px solid #dc3545;
+}
+
+/* Default border style */
+.form-group input:not([type="radio"]), 
+.form-group select {
+    border: 1px solid #ddd;
+}
+
+/* Style for radio buttons container */
+.gender-group.valid {
+    padding: 5px;
+    border: 2px solid #28a745;
+    border-radius: 4px;
+}
+
+.gender-group.invalid {
+    padding: 5px;
+    border: 2px solid #dc3545;
+    border-radius: 4px;
+}

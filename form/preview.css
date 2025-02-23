@@ -1,0 +1,259 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.preview-delete-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.preview-section, .delete-section {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+}
+
+.preview-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+}
+
+.preview-card img {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.preview-card p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.edit-btn {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.delete-section {
+    position: relative;
+}
+
+.delete-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.delete-controls button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #007bff;
+    color: white;
+}
+
+.delete-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+.delete-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.delete-item label {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 20px;
+}
+
+.avatar-placeholder {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.avatar-placeholder svg {
+    width: 100%;
+    height: 100%;
+}
+
+.document-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+.document-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.empty-state .preview-field {
+    text-align: left;
+    padding: 10px;
+    margin: 5px 0;
+    border-bottom: 1px solid #eee;
+    color: #666;
+}
+
+.empty-state .edit-btn {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.empty-state .edit-inline {
+    margin-top: 10px;
+}
+
+.empty-state .edit-inline input,
+.empty-state .edit-inline select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.empty-state .save-cancel-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.empty-state p {
+    color: #666;
+    font-size: 16px;
+}
+
+.drag-over {
+    border: 2px dashed #007bff;
+    background-color: #f8f9fa;
+}
+
+.preview-field {
+    margin: 10px 0;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.field-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preview-field strong {
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.field-value {
+    flex: 1;
+}
+
+.edit-inline {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+}
+
+.edit-inline input,
+.edit-inline select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 0;
+}
+
+.preview-field[data-field="name"] .edit-inline {
+    display: flex;
+    gap: 10px;
+}
+
+.preview-field[data-field="name"] .edit-inline input {
+    flex: 1;
+}
+
+.button-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.edit-btn,
+.save-btn,
+.cancel-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.edit-btn {
+    background: #007bff;
+    color: white;
+    width: 100%;
+}
+
+.save-btn {
+    background: #28a745;
+    color: white;
+}
+
+.cancel-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.save-cancel-btns {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
