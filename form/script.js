@@ -127,7 +127,7 @@ document.getElementById('userForm').addEventListener('submit', function(e) {
             params.append('education', formData.get('education'));
             params.append('profileImage', e.target.result);
             
-            // Redirect to preview page with form data
+            // Updated path to preview.html with absolute path
             window.location.href = 'preview.html?' + params.toString();
         };
         reader.readAsDataURL(profileImage);

@@ -203,14 +203,35 @@ function attachDeleteEventListeners() {
         const checkedItems = document.querySelectorAll('.delete-item input[type="checkbox"]:checked');
         checkedItems.forEach(checkbox => {
             const field = checkbox.id.replace('Delete', '');
-            // Remove from formData
-            if (field === 'name') {
-                formData.firstName = '';
-                formData.lastName = '';
-            } else if (field === 'image') {
+            // Handle profile image deletion separately
+            if (field === 'image') {
                 formData.profileImage = '';
+                // Update preview card image
+                const previewCard = document.querySelector('.preview-card');
+                const imgElement = previewCard.querySelector('img');
+                if (imgElement) {
+                    imgElement.style.display = 'none';
+                }
+                // Show avatar placeholder
+                if (!previewCard.querySelector('.avatar-placeholder')) {
+                    const avatarPlaceholder = document.createElement('div');
+                    avatarPlaceholder.className = 'avatar-placeholder';
+                    avatarPlaceholder.innerHTML = `
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="35" r="25" fill="#B2EBF2"/>
+                            <path d="M50 65c-25 0-40 15-40 35h80c0-20-15-35-40-35z" fill="#B2EBF2"/>
+                        </svg>
+                    `;
+                    previewCard.insertBefore(avatarPlaceholder, previewCard.firstChild);
+                }
             } else {
-                formData[field.toLowerCase()] = '';
+                // Handle other field deletions
+                if (field === 'name') {
+                    formData.firstName = '';
+                    formData.lastName = '';
+                } else {
+                    formData[field.toLowerCase()] = '';
+                }
             }
             checkbox.parentElement.remove();
         });
@@ -218,8 +239,8 @@ function attachDeleteEventListeners() {
         // Update preview card
         updatePreviewCard(document.querySelector('.preview-card'));
         
-        // Show empty state if all fields are deleted or if profile image is deleted
-        if (Object.values(formData).every(value => !value) || !formData.profileImage) {
+        // Show empty state only if all fields are deleted
+        if (Object.values(formData).every(value => !value)) {
             showEmptyState();
         }
     });
